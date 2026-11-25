@@ -1,0 +1,6 @@
+{
+  "name": "ZoneCheck — Kirby-Bauer AMR Plate Reader",
+  "description": "Phone-friendly Kirby-Bauer disk diffusion zone reader with 6 mm disk calibration, CLSI/EUCAST breakpoint interpretation, ground-truth validation, and lab recording export.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
