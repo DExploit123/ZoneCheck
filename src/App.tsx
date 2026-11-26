@@ -159,9 +159,45 @@ export default function App() {
         }),
       });
 
-      const payload = await res.json();
+      const rawText = await res.text();
+      let payload: {
+        error?: string;
+        disks?: Array<{
+          diskCode?: string;
+          printedCode?: string;
+          orientation_note?: string;
+          centerXNorm?: number;
+          centerYNorm?: number;
+          diskDiameterNorm?: number;
+          zoiDiameterNorm?: number;
+          edgeNote?: string;
+          confidence?: number;
+        }>;
+        medianDiskNorm?: number;
+        imageQuality?: {
+          overheadAlignmentOk?: boolean;
+          glareDetected?: boolean;
+          overlappingZonesDetected?: boolean;
+          lawnUniformityNote?: string;
+        };
+      } = {};
+      try {
+        payload = rawText ? JSON.parse(rawText) : {};
+      } catch {
+        const trimmed = rawText.trim().toLowerCase();
+        if (trimmed.startsWith("<!doctype") || trimmed.startsWith("<html")) {
+          throw new Error(
+            `API route /api/analyze-plate returned HTML instead of JSON (HTTP ${res.status}). Ensure the Express server is running via "npm start" rather than static-only frontend hosting.`
+          );
+        }
+        throw new Error(`Invalid server response (HTTP ${res.status}).`);
+      }
+
       if (!res.ok) {
-        throw new Error(payload?.error || `Analysis failed with status ${res.status}`);
+        throw new Error(
+          (typeof payload.error === "string" && payload.error) ||
+            `Analysis failed with status ${res.status}`
+        );
       }
 
       const rawDisks = Array.isArray(payload.disks) ? payload.disks : [];
